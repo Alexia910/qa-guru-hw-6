@@ -5,8 +5,12 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
+
+import java.util.stream.Stream;
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
@@ -21,7 +25,7 @@ public class NetflixParametrizedTests {
 
     @BeforeEach
     void precondition() {
-                open("https://www.netflix.com/by/login");
+        open("https://www.netflix.com/by/login");
     }
 
     @AfterEach
@@ -32,12 +36,12 @@ public class NetflixParametrizedTests {
     @ValueSource(strings = {"abc", "de", "r"})
     @ParameterizedTest(name = "Проверка валидности логина")
     void validationLoginTest(String login) {
-    //Ввод пароля
-    $("#id_password").setValue("qwerty");
-    //Ввод логина
-    $("#id_userLoginId").setValue(login);
-    $(".login-button").click();
-    $$(".hybrid-login-form-main").find(text("Please enter a valid email.")).shouldBe(visible);
+        //Ввод пароля
+        $("#id_password").setValue("qwerty");
+        //Ввод логина
+        $("#id_userLoginId").setValue(login);
+        $(".login-button").click();
+        $$(".hybrid-login-form-main").find(text("Please enter a valid email.")).shouldBe(visible);
     }
 
     @CsvSource(value = {
@@ -52,4 +56,18 @@ public class NetflixParametrizedTests {
         $$(".hybrid-login-form-main").find(text(message)).shouldBe(visible);
     }
 
+    static Stream<Arguments> argumentsForThirdTest() {
+        return Stream.of(
+                Arguments.of("4", "Please enter a valid phone number."),
+                Arguments.of("@", "Please enter a valid email.")
+        );
+    }
+
+    @MethodSource(value = "argumentsForThirdTest")
+    @ParameterizedTest(name = "Проверка валидации почты и телефона")
+    void validationPhoneAndEmailTest(String login, String message) {
+        $("#id_userLoginId").setValue(login);
+        $("#id_password").click();
+        $$(".hybrid-login-form-main").find(text(message)).shouldBe(visible);
+    }
 }
