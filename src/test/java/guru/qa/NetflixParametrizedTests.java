@@ -16,6 +16,8 @@ import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.*;
 
+//Параметризованные тесты для сайта netflix.com
+
 public class NetflixParametrizedTests {
 
     @BeforeAll
@@ -71,3 +73,4 @@ public class NetflixParametrizedTests {
         $$(".hybrid-login-form-main").find(text(message)).shouldBe(visible);
     }
 }
+
