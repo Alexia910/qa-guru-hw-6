@@ -35,7 +35,7 @@ public class NetflixParametrizedTests {
         closeWebDriver();
     }
 
-    @ValueSource(strings = {"abc", "de", "r"})
+    @ValueSource(strings = {"abc", "de", "r", "@"})
     @ParameterizedTest(name = "Проверка валидности логина")
     void validationLoginTest(String login) {
         //Ввод пароля
