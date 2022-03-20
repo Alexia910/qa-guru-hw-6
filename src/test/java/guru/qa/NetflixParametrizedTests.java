@@ -1,6 +1,8 @@
 package guru.qa;
 
 import com.codeborne.selenide.Configuration;
+import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.SelenideElement;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,6 +21,12 @@ import static com.codeborne.selenide.Selenide.*;
 //Параметризованные тесты для сайта netflix.com
 
 public class NetflixParametrizedTests {
+
+    //locators
+    SelenideElement passwordField = $("#id_password");
+    SelenideElement loginField = $("#id_userLoginId");
+    SelenideElement loginButton = $(".login-button");
+    ElementsCollection resultForm = $$(".hybrid-login-form-main");
 
     @BeforeAll
     static void beforeAll() {
@@ -39,11 +47,11 @@ public class NetflixParametrizedTests {
     @ParameterizedTest(name = "Проверка валидности логина")
     void validationLoginTest(String login) {
         //Ввод пароля
-        $("#id_password").setValue("qwerty");
+        passwordField.setValue("qwerty");
         //Ввод логина
-        $("#id_userLoginId").setValue(login);
-        $(".login-button").click();
-        $$(".hybrid-login-form-main").find(text("Please enter a valid email.")).shouldBe(visible);
+        loginField.setValue(login);
+        loginButton.click();
+        resultForm.find(text("Please enter a valid email.")).shouldBe(visible);
     }
 
     @CsvSource(value = {
@@ -52,10 +60,10 @@ public class NetflixParametrizedTests {
     }, delimiter = '|')
     @ParameterizedTest(name = "Проверка аутентификации")
     void loginAndPasswordAuthenticationTest(String login, String password, String message) {
-        $("#id_password").setValue(password);
-        $("#id_userLoginId").setValue(login);
-        $(".login-button").click();
-        $$(".hybrid-login-form-main").find(text(message)).shouldBe(visible);
+        passwordField.setValue(password);
+        loginField.setValue(login);
+        loginButton.click();
+        resultForm.find(text(message)).shouldBe(visible);
     }
 
     static Stream<Arguments> argumentsForThirdTest() {
@@ -68,9 +76,9 @@ public class NetflixParametrizedTests {
     @MethodSource(value = "argumentsForThirdTest")
     @ParameterizedTest(name = "Проверка валидации почты и телефона")
     void validationPhoneAndEmailTest(String login, String message) {
-        $("#id_userLoginId").setValue(login);
-        $("#id_password").click();
-        $$(".hybrid-login-form-main").find(text(message)).shouldBe(visible);
+        loginField.setValue(login);
+        passwordField.click();
+        resultForm.find(text(message)).shouldBe(visible);
     }
 }
 
